@@ -5,7 +5,6 @@ import (
 	_ "fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"bytes"
 )
 
@@ -42,5 +41,17 @@ func (c *Client) GetAccounts() []Account {
 func (c Client) CreateBill (AccountId string, BillData []byte) bool {
 	url := BaseURL + "/accounts/" + AccountId + "/bills" + c.EncodeParams(nil)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(BillData))
+	if err != nil {
+		panic(err)
+	}
+	return resp.StatusCode == 201
+}
+
+func (c Client) CreatePurchase (AccountId string, PurchaseData []byte) bool {
+	url := BaseURL + "/accounts/" + AccountId + "/purchases" + c.EncodeParams(nil)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(PurchaseData))
+	if err != nil {
+		panic(err)
+	}
 	return resp.StatusCode == 201
 }

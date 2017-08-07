@@ -28,24 +28,32 @@ type (
 	}
 )
 
-func (c *Client) GetNearbyATMs(radius int64) []ATM {
-
-	var atms []ATM = make([]ATM, 0)
-	var page ATMPage
-
+func GetLatLng () (float64, float64) {
 	currentGPSurl := "https://freegeoip.net/json/"
 	resp, err := http.Get(currentGPSurl)
+	if err != nil {
+		panic(err)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
 	dec := json.NewDecoder(strings.NewReader(string(body)))
 	var m map[string]interface{}
 	err = dec.Decode(&m)
 	if err != nil && err != io.EOF {
 		log.Fatal(err)
 	}
+	return m["latitude"].(float64), m["longitude"].(float64)
+}
 
-	lat, lng := m["latitude"].(float64), m["longitude"].(float64)
+func (c *Client) GetNearbyATMs(radius int64) []ATM {
+
+	var atms []ATM = make([]ATM, 0)
+	var page ATMPage
 
 	params := make(map[string]string)
+	lat, lng := GetLatLng()
 	params["lat"] = strconv.FormatFloat(lat, 'f', 4, 64)
 	params["lng"] = strconv.FormatFloat(lng, 'f', 4, 64)
 	params["rad"] = strconv.FormatInt(radius, 10) // 10 mile radius
@@ -56,11 +64,11 @@ func (c *Client) GetNearbyATMs(radius int64) []ATM {
 
 	  page = *new(ATMPage) // zero the memory
 
-		resp, err = http.Get(url)
+		resp, err := http.Get(url)
 		if err != nil {
 			panic(err)
 		}
-		body, err = ioutil.ReadAll(resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			panic(err)
 		}

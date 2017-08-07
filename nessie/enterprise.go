@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	_ "fmt"
 	"io/ioutil"
-	"bytes"
+	_ "bytes"
 	"strings"
 	"net/http"
 )
@@ -30,5 +30,5 @@ func (c Client) CountMerchants () int {
 	var m map[string]interface{}
 	err = dec.Decode(&m)
 	_ = err
-	return resp.StatusCode == 201
+	return resp.StatusCode 
 }
