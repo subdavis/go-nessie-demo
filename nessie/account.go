@@ -9,6 +9,7 @@ import (
 )
 
 type (
+
 	Account struct {
 		Id            string `json:"_id"`
 		AccountType   string `json:"Type"`
@@ -38,20 +39,29 @@ func (c *Client) GetAccounts() []Account {
 	return accounts
 }
 
-func (c Client) CreateBill (AccountId string, BillData []byte) bool {
+func (c Client) CreateBill (AccountId string, BillData []byte) int {
 	url := BaseURL + "/accounts/" + AccountId + "/bills" + c.EncodeParams(nil)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(BillData))
 	if err != nil {
 		panic(err)
 	}
-	return resp.StatusCode == 201
+	return resp.StatusCode
 }
 
-func (c Client) CreatePurchase (AccountId string, PurchaseData []byte) bool {
+func (c Client) CreatePurchase (AccountId string, PurchaseData []byte) int {
 	url := BaseURL + "/accounts/" + AccountId + "/purchases" + c.EncodeParams(nil)
 	resp, err := http.Post(url, "application/json", bytes.NewReader(PurchaseData))
 	if err != nil {
 		panic(err)
 	}
-	return resp.StatusCode == 201
+	return resp.StatusCode
+}
+
+func (c Client) CreateDeposit (AccountId string, DepositData []byte) int {
+	url := BaseURL + "/accounts/" + AccountId + "/deposits" + c.EncodeParams(nil)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(DepositData))
+	if err != nil {
+		panic(err)
+	}
+	return resp.StatusCode
 }

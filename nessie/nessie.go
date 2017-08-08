@@ -19,6 +19,20 @@ type (
 		State      string `json:"state"`
 		StreetName string `json:"street_name"`
 	}
+
+	ResponseClass struct {
+		Code int `json:"code"`
+		Message string `json:"message"`
+		ObjectCreated NessieObject `json:'"objectCreated`
+	}
+
+	NessieObject struct {
+		Id string `json:"_id"`
+	}
+
+	IdGetter interface {
+		Id()
+	}
 )
 
 var (

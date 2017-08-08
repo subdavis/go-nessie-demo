@@ -2,10 +2,8 @@ package nessie
 
 import (
 	"encoding/json"
-	_ "fmt"
 	"io/ioutil"
 	_ "bytes"
-	"strings"
 	"net/http"
 )
 
@@ -13,7 +11,8 @@ type (
 
   Merchant struct {
   	Id          string    `json:"_id"`
-  	Coordinates Location  `json:"geocode"`
+  	// Please vadidate data types server-side...  There are "string" geocoordinates....
+  	Coordinates map[string]interface{} `json:"geocode"` 
   	Name        string    `json:"name"`
   	Address     Address   `json:"address"`
   }
@@ -22,13 +21,20 @@ type (
   }
 )
 
-func (c Client) CountMerchants () int {
+func (c Client) GetMerchants () []Merchant {
+	var mR MerchantResponse
 	url := BaseURL + "/enterprise/merchants" + c.EncodeParams(nil)
 	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
-	dec := json.NewDecoder(strings.NewReader(string(body)))
-	var m map[string]interface{}
-	err = dec.Decode(&m)
-	_ = err
-	return resp.StatusCode 
+	if err != nil {
+		panic(err)
+	}
+	err = json.Unmarshal(body, &mR)
+	if err != nil {
+		panic(err)
+	} 
+	return mR.Results
 }
